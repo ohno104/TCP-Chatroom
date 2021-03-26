@@ -3,6 +3,7 @@ package message
 const (
 	LoginMsgType    = "LoginMes"
 	LoginResMsgType = "LoginResMes"
+	RegisterMsgType = "RegisterMsg"
 )
 
 var (
