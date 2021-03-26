@@ -1,4 +1,4 @@
-package login
+package processes
 
 import (
 	"TCP-Chatroom/common/message"
@@ -9,7 +9,10 @@ import (
 	"net"
 )
 
-func Login(userId int, userPwd string) (err error) {
+type UserProcess struct {
+}
+
+func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 	// fmt.Printf("userId = %d userPwd=%s \n", userId, userPwd)
 	// return nil
 
@@ -63,7 +66,10 @@ func Login(userId int, userPwd string) (err error) {
 		return
 	}
 
-	msg, err = utils.ReadPkg(conn)
+	tf := &utils.Transfer{
+		Conn: conn,
+	}
+	msg, err = tf.ReadPkg()
 	if err != nil {
 		fmt.Println("readPkg(conn) err =", err)
 		return
@@ -73,6 +79,17 @@ func Login(userId int, userPwd string) (err error) {
 	err = json.Unmarshal([]byte(msg.Data), &loginResMes)
 	if loginResMes.Code == message.SUCCESS {
 		fmt.Println("登入成功")
+
+		//需要在客戶端啟動一個協程
+		//該協程保持和服務器的通訊, 如果服務器有數據推送給客戶端
+		//則接收並顯示在客戶端的終端
+		go serverProcessMsg(conn)
+
+		//登入後的二級菜單
+		for {
+			ShowMenu()
+		}
+
 	} else if loginResMes.Code == message.UNREGISTERED {
 		fmt.Println(loginResMes.Error)
 	}

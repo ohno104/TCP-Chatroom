@@ -1,7 +1,7 @@
 package main
 
 import (
-	"TCP-Chatroom/client/login"
+	"TCP-Chatroom/client/processes"
 	"fmt"
 )
 
@@ -22,7 +22,14 @@ func main() {
 		switch key {
 		case 1:
 			fmt.Println("登入聊天室")
-			loop = false
+			fmt.Printf("請輸入用戶id: ")
+			fmt.Scanf("%d\n", &userId)
+			fmt.Printf("請輸入用戶密碼: ")
+			fmt.Scanf("%s\n", &userPwd)
+
+			up := &processes.UserProcess{}
+			up.Login(userId, userPwd)
+
 		case 2:
 			fmt.Println("註冊用戶")
 			loop = false
@@ -37,18 +44,6 @@ func main() {
 		if loop == false {
 			break
 		}
-
-	}
-
-	if key == 1 {
-		fmt.Printf("請輸入用戶id: ")
-		fmt.Scanf("%d\n", &userId)
-		fmt.Printf("請輸入用戶密碼: ")
-		fmt.Scanf("%s\n", &userPwd)
-
-		login.Login(userId, userPwd)
-
-	} else {
 
 	}
 }
