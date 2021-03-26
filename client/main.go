@@ -46,12 +46,7 @@ func main() {
 		fmt.Printf("請輸入用戶密碼: ")
 		fmt.Scanf("%s\n", &userPwd)
 
-		err := login.Login(userId, userPwd)
-		if err != nil {
-			fmt.Println("登入失敗")
-		} else {
-			fmt.Println("登入成功")
-		}
+		login.Login(userId, userPwd)
 
 	} else {
 

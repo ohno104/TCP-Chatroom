@@ -2,6 +2,7 @@ package login
 
 import (
 	"TCP-Chatroom/common/message"
+	"TCP-Chatroom/utils"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -50,7 +51,7 @@ func Login(userId int, userPwd string) (err error) {
 	binary.BigEndian.PutUint32(buf[0:4], pkgLen)
 	n, err := conn.Write(buf[:4])
 	if n != 4 || err != nil {
-		fmt.Println("conn.Write fail", err)
+		fmt.Println("conn.Write(bytes) fail", err)
 		return
 	}
 	fmt.Printf("客戶端, 發送消息的長度=%d\n", len(data))
@@ -61,5 +62,20 @@ func Login(userId int, userPwd string) (err error) {
 		fmt.Println("conn.write(data) fail =", err)
 		return
 	}
+
+	msg, err = utils.ReadPkg(conn)
+	if err != nil {
+		fmt.Println("readPkg(conn) err =", err)
+		return
+	}
+
+	var loginResMes message.LoginRes
+	err = json.Unmarshal([]byte(msg.Data), &loginResMes)
+	if loginResMes.Code == message.SUCCESS {
+		fmt.Println("登入成功")
+	} else if loginResMes.Code == message.UNREGISTERED {
+		fmt.Println(loginResMes.Error)
+	}
+
 	return
 }
