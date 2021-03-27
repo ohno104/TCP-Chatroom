@@ -1,10 +1,17 @@
 package message
 
 const (
-	LoginMsgType    = "LoginMsg"
-	LoginResMsgType = "LoginResMeg"
-	RegisterMsgType = "RegisterMsg"
-	RegisterResType = "RegisterResMsg"
+	LoginMsgType            = "LoginMsg"
+	LoginResMsgType         = "LoginResMeg"
+	RegisterMsgType         = "RegisterMsg"
+	RegisterResType         = "RegisterResMsg"
+	NotifyUserStatusMsgType = "NotifyUserStatusMsg"
+)
+
+const (
+	UserOnline = iota
+	UserOffline
+	UserBusy
 )
 
 type Message struct {
@@ -18,9 +25,10 @@ type LoginMsg struct {
 	UserName string `json:"userName"`
 }
 
-type LoginRes struct {
-	Code  int    `json:"code"`
-	Error string `json:"error"`
+type LoginResMsg struct {
+	Code    int    `json:"code"`
+	UserIds []int  `json:"userIds"`
+	Error   string `json:"error"`
 }
 
 type RegisterMsg struct {
@@ -30,4 +38,9 @@ type RegisterMsg struct {
 type RegisterResMsg struct {
 	Code  int    `json:"code"`
 	Error string `json:"error"`
+}
+
+type NotifyUserStatusMsg struct {
+	UserId int `json:"usesrId"`
+	Status int `json:"status"`
 }

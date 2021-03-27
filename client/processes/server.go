@@ -1,7 +1,9 @@
 package processes
 
 import (
+	"TCP-Chatroom/common/message"
 	"TCP-Chatroom/utils"
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
@@ -20,7 +22,7 @@ func ShowMenu() {
 	fmt.Scanf("%d\n", &key)
 	switch key {
 	case 1:
-		fmt.Println("顯示在線用戶列表")
+		outputOnlineUser()
 	case 2:
 		fmt.Println("發送消息")
 	case 3:
@@ -45,6 +47,17 @@ func serverProcessMsg(Conn net.Conn) {
 			fmt.Println("tf.ReadPkg err =", err)
 			return
 		}
-		fmt.Printf("你收到了一則訊息: %v", msg)
+		switch msg.Type {
+		case message.NotifyUserStatusMsgType:
+			//把這個用戶的信息狀態保存到客戶端的map裡維護
+			var notifyUserStatusMsg message.NotifyUserStatusMsg
+			json.Unmarshal([]byte(msg.Data), &notifyUserStatusMsg)
+
+			updateUserStatus(&notifyUserStatusMsg)
+
+		default:
+			fmt.Println("服務器端返回了未知的消息類型")
+		}
+		//fmt.Printf("你收到了一則訊息: %v", msg)
 	}
 }

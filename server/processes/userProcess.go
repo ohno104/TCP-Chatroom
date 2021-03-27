@@ -14,6 +14,42 @@ type UserProcess struct {
 	UserId int
 }
 
+func (this *UserProcess) NotifyOthersOnlineUser(userId int) {
+	for id, up := range userMgr.onlineUsers {
+		if id == userId {
+			continue
+		}
+		up.notifyToOtherUsers(userId)
+	}
+}
+
+func (this *UserProcess) notifyToOtherUsers(userId int) {
+	var msg message.Message
+	msg.Type = message.NotifyUserStatusMsgType
+
+	var notifyUserStatusMsg message.NotifyUserStatusMsg
+	notifyUserStatusMsg.UserId = userId
+	notifyUserStatusMsg.Status = message.UserOnline
+
+	data, err := json.Marshal(notifyUserStatusMsg)
+	if err != nil {
+		fmt.Println("json.Marshal err =", err)
+	}
+
+	msg.Data = string(data)
+
+	data, err = json.Marshal(msg)
+	tf := &utils.Transfer{
+		Conn: this.Conn,
+	}
+
+	err = tf.WritePkg(data)
+	if err != nil {
+		fmt.Println("notifyToOtherUsers err =", err)
+		return
+	}
+}
+
 func (this *UserProcess) ServerPreocessRegister(msg *message.Message) (err error) {
 	var registerMsg message.RegisterMsg
 	err = json.Unmarshal([]byte(msg.Data), &registerMsg)
@@ -68,7 +104,7 @@ func (this *UserProcess) ServerPreocessLogin(msg *message.Message) (err error) {
 
 	var resMsg message.Message
 	resMsg.Type = message.LoginResMsgType
-	var loginResMsg message.LoginRes
+	var loginResMsg message.LoginResMsg
 
 	user, err := model.MyUserDao.Login(loginMsg.UserId, loginMsg.UserPwd)
 
@@ -87,6 +123,18 @@ func (this *UserProcess) ServerPreocessLogin(msg *message.Message) (err error) {
 
 	} else {
 		loginResMsg.Code = 200
+
+		//加入線上用戶列表
+		this.UserId = loginMsg.UserId
+		userMgr.AddOnlineUser(this)
+
+		//通知其他用戶我上線了
+		this.NotifyOthersOnlineUser(this.UserId)
+
+		for _, v := range userMgr.onlineUsers {
+			loginResMsg.UserIds = append(loginResMsg.UserIds, v.UserId)
+		}
+
 		fmt.Printf("%v 登入成功\n", user.UserName)
 	}
 

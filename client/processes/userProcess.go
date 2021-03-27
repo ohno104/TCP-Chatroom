@@ -132,10 +132,24 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 		return
 	}
 
-	var loginResMsg message.LoginRes
+	var loginResMsg message.LoginResMsg
 	err = json.Unmarshal([]byte(msg.Data), &loginResMsg)
 	if loginResMsg.Code == 200 {
-		fmt.Println("登入成功")
+		//fmt.Println("登入成功")
+
+		fmt.Println("目前的線上用戶:")
+		for _, v := range loginResMsg.UserIds {
+			if v == userId {
+				continue
+			}
+			fmt.Println(v)
+			user := &message.User{
+				UserId:     v,
+				UserStatus: message.UserOnline,
+			}
+			onlineUsers[v] = user
+		}
+		fmt.Printf("\n\n")
 
 		//需要在客戶端啟動一個協程
 		//該協程保持和服務器的通訊, 如果服務器有數據推送給客戶端
