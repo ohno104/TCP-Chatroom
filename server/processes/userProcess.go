@@ -2,6 +2,7 @@ package processes
 
 import (
 	"TCP-Chatroom/common/message"
+	"TCP-Chatroom/server/model"
 	"TCP-Chatroom/utils"
 	"encoding/json"
 	"fmt"
@@ -22,15 +23,26 @@ func (this *UserProcess) ServerPreocessLogin(msg *message.Message) (err error) {
 
 	var resMsg message.Message
 	resMsg.Type = message.LoginResMsgType
-
 	var loginResMsg message.LoginRes
 
-	//func test
-	if loginMsg.UserId == 100 && loginMsg.UserPwd == "123456" {
-		loginResMsg.Code = message.SUCCESS
+	user, err := model.MyUserDao.Login(loginMsg.UserId, loginMsg.UserPwd)
+
+	if err != nil {
+		if err == model.ERROR_USER_NOTEXISTS {
+			loginResMsg.Code = 500
+			loginResMsg.Error = err.Error()
+
+		} else if err == model.ERROR_USER_PWD {
+			loginResMsg.Code = 403
+			loginResMsg.Error = err.Error()
+		} else {
+			loginResMsg.Code = 505
+			loginResMsg.Error = "服務器內部錯誤"
+		}
+
 	} else {
-		loginResMsg.Code = message.UNREGISTERED
-		loginResMsg.Error = "用戶不存在"
+		loginResMsg.Code = 200
+		fmt.Printf("%v 登入成功\n", user.UserName)
 	}
 
 	//對回傳資料序列化

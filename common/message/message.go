@@ -1,14 +1,10 @@
 package message
 
 const (
-	LoginMsgType    = "LoginMes"
-	LoginResMsgType = "LoginResMes"
+	LoginMsgType    = "LoginMsg"
+	LoginResMsgType = "LoginResMeg"
 	RegisterMsgType = "RegisterMsg"
-)
-
-var (
-	SUCCESS      = 200
-	UNREGISTERED = 500
+	RegisterResType = "RegisterResMsg"
 )
 
 type Message struct {
@@ -23,6 +19,15 @@ type LoginMsg struct {
 }
 
 type LoginRes struct {
+	Code  int    `json:"code"`
+	Error string `json:"error"`
+}
+
+type RegisterMsg struct {
+	User User `json:"user"`
+}
+
+type RegisterResMsg struct {
 	Code  int    `json:"code"`
 	Error string `json:"error"`
 }

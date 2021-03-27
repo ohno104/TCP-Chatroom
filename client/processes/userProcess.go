@@ -57,7 +57,7 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 		fmt.Println("conn.Write(bytes) fail", err)
 		return
 	}
-	fmt.Printf("客戶端, 發送消息的長度=%d\n", len(data))
+	//fmt.Printf("客戶端, 發送消息的長度=%d\n", len(data))
 
 	//發送消息
 	_, err = conn.Write(data)
@@ -77,7 +77,7 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 
 	var loginResMes message.LoginRes
 	err = json.Unmarshal([]byte(msg.Data), &loginResMes)
-	if loginResMes.Code == message.SUCCESS {
+	if loginResMes.Code == 200 {
 		fmt.Println("登入成功")
 
 		//需要在客戶端啟動一個協程
@@ -90,7 +90,7 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 			ShowMenu()
 		}
 
-	} else if loginResMes.Code == message.UNREGISTERED {
+	} else {
 		fmt.Println(loginResMes.Error)
 	}
 

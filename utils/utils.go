@@ -20,7 +20,7 @@ func (this *Transfer) ReadPkg() (msg message.Message, err error) {
 		//fmt.Println("conn.Read err =", err)
 		return
 	}
-	fmt.Println("讀到的 buf=", this.Buf[:4])
+	//fmt.Println("讀到的 buf=", this.Buf[:4])
 
 	var pkgLen uint32
 	pkgLen = binary.BigEndian.Uint32(this.Buf[:4])
