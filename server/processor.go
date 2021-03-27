@@ -22,8 +22,13 @@ func (this *Processor) serverPreocessMsg(msg *message.Message) (err error) {
 		}
 		err = up.ServerPreocessLogin(msg)
 
-	//case message.RegisterMsgType:
-	//註冊處理
+	case message.RegisterMsgType:
+		//註冊處理
+		up := &processes.UserProcess{
+			Conn: this.Conn,
+		}
+		err = up.ServerPreocessRegister(msg)
+
 	default:
 		fmt.Println("消息類型錯誤")
 	}

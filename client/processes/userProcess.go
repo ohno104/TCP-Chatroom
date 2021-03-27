@@ -12,6 +12,63 @@ import (
 type UserProcess struct {
 }
 
+func (this *UserProcess) Register(userId int, userPwd string, userName string) (err error) {
+	conn, err := net.Dial("tcp", "localhost:8889")
+	if err != nil {
+		fmt.Println("net.Dail err =", err)
+		return
+	}
+	//記得關閉
+	defer conn.Close()
+
+	var msg message.Message
+	msg.Type = message.RegisterMsgType
+
+	var registerMsg message.RegisterMsg
+	registerMsg.User.UserId = userId
+	registerMsg.User.UserPwd = userPwd
+	registerMsg.User.UserName = userName
+
+	//data內容序列化
+	data, err := json.Marshal(registerMsg)
+	if err != nil {
+		fmt.Println("json.Marshal err = ", err)
+		return
+	}
+	msg.Data = string(data)
+
+	//整個package序列化
+	data, err = json.Marshal(msg)
+	if err != nil {
+		fmt.Println("json.Marshal err = ", err)
+		return
+	}
+
+	tf := utils.Transfer{
+		Conn: conn,
+	}
+
+	err = tf.WritePkg(data)
+	if err != nil {
+		fmt.Println("註冊發送信息錯誤 =", err)
+	}
+
+	msg, err = tf.ReadPkg()
+	if err != nil {
+		fmt.Println("readPkg(conn) error =", err)
+	}
+
+	var registerResMsg message.RegisterResMsg
+	err = json.Unmarshal([]byte(msg.Data), &registerResMsg)
+	if registerResMsg.Code == 200 {
+		fmt.Println("註冊成功")
+
+	} else {
+		fmt.Println(registerResMsg.Error)
+	}
+	return
+}
+
 func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 	// fmt.Printf("userId = %d userPwd=%s \n", userId, userPwd)
 	// return nil
@@ -75,9 +132,9 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 		return
 	}
 
-	var loginResMes message.LoginRes
-	err = json.Unmarshal([]byte(msg.Data), &loginResMes)
-	if loginResMes.Code == 200 {
+	var loginResMsg message.LoginRes
+	err = json.Unmarshal([]byte(msg.Data), &loginResMsg)
+	if loginResMsg.Code == 200 {
 		fmt.Println("登入成功")
 
 		//需要在客戶端啟動一個協程
@@ -91,7 +148,7 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 		}
 
 	} else {
-		fmt.Println(loginResMes.Error)
+		fmt.Println(loginResMsg.Error)
 	}
 
 	return

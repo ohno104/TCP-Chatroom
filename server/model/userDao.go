@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"TCP-Chatroom/common/message"
+
 	"github.com/garyburd/redigo/redis"
 )
 
@@ -52,6 +54,31 @@ func (this *UserDao) Login(userId int, userPwd string) (user *User, err error) {
 	if user.UserPwd != userPwd {
 		err = ERROR_USER_PWD
 		return
+	}
+
+	return
+}
+
+func (this *UserDao) Register(user *message.User) (err error) {
+	conn := this.pool.Get()
+	defer conn.Close()
+
+	_, err = this.getUserById(conn, user.UserId)
+	if err == nil {
+		//表示已經被註冊 所以才查的到
+		err = ERROR_USER_EXISTS
+		return
+	}
+
+	//表示未被註冊
+	data, err := json.Marshal(user)
+	if err != nil {
+		return
+	}
+
+	_, err = conn.Do("HSet", "users", user.UserId, string(data))
+	if err != nil {
+		fmt.Println("保存註冊用戶錯誤 err =", err)
 	}
 
 	return
