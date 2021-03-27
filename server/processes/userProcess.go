@@ -10,7 +10,8 @@ import (
 )
 
 type UserProcess struct {
-	Conn net.Conn
+	Conn   net.Conn
+	UserId int
 }
 
 func (this *UserProcess) ServerPreocessRegister(msg *message.Message) (err error) {
