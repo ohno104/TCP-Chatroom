@@ -29,6 +29,11 @@ func (this *Processor) serverPreocessMsg(msg *message.Message) (err error) {
 		}
 		err = up.ServerPreocessRegister(msg)
 
+	case message.SmsMsgType:
+		//全頻處理
+		smsProcess := &processes.SmsProcess{}
+		smsProcess.SendGroupMsg(msg)
+
 	default:
 		fmt.Println("消息類型錯誤")
 	}

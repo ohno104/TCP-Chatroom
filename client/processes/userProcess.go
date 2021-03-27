@@ -137,6 +137,11 @@ func (this *UserProcess) Login(userId int, userPwd string) (err error) {
 	if loginResMsg.Code == 200 {
 		//fmt.Println("登入成功")
 
+		//紀錄自己的user
+		curUser.Conn = conn
+		curUser.UserId = userId
+		curUser.UserStatus = message.UserOnline
+
 		fmt.Println("目前的線上用戶:")
 		for _, v := range loginResMsg.UserIds {
 			if v == userId {

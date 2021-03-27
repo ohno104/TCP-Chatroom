@@ -20,11 +20,15 @@ func ShowMenu() {
 
 	var key int
 	fmt.Scanf("%d\n", &key)
+	var content string
+	smsProcess := &SmsProcess{}
 	switch key {
 	case 1:
 		outputOnlineUser()
 	case 2:
-		fmt.Println("發送消息")
+		fmt.Println("全頻:")
+		fmt.Scanf("%s\n", &content)
+		smsProcess.SendGroupMsg(content)
 	case 3:
 		fmt.Println("信息列表")
 	case 4:
@@ -55,9 +59,12 @@ func serverProcessMsg(Conn net.Conn) {
 
 			updateUserStatus(&notifyUserStatusMsg)
 
+		case message.SmsMsgType:
+			//全頻
+			outputGroupMsg(&msg)
+
 		default:
 			fmt.Println("服務器端返回了未知的消息類型")
 		}
-		//fmt.Printf("你收到了一則訊息: %v", msg)
 	}
 }

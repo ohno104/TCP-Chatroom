@@ -1,11 +1,13 @@
 package processes
 
 import (
+	"TCP-Chatroom/client/model"
 	"TCP-Chatroom/common/message"
 	"fmt"
 )
 
 var onlineUsers map[int]*message.User = make(map[int]*message.User, 10)
+var curUser model.CurUser
 
 func outputOnlineUser() {
 	fmt.Println("\n當前在線用戶列表:")

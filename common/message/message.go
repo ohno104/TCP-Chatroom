@@ -6,6 +6,7 @@ const (
 	RegisterMsgType         = "RegisterMsg"
 	RegisterResType         = "RegisterResMsg"
 	NotifyUserStatusMsgType = "NotifyUserStatusMsg"
+	SmsMsgType              = "SmsMsg"
 )
 
 const (
@@ -43,4 +44,9 @@ type RegisterResMsg struct {
 type NotifyUserStatusMsg struct {
 	UserId int `json:"usesrId"`
 	Status int `json:"status"`
+}
+
+type SmsMsg struct {
+	Content string `json:"content"`
+	User
 }
