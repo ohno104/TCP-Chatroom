@@ -1,12 +1,13 @@
 package main
 
 import (
-	"TCP-Chatroom/client/login"
+	"TCP-Chatroom/client/processes"
 	"fmt"
 )
 
 var userId int
 var userPwd string
+var userName string
 
 func main() {
 	var key int
@@ -22,10 +23,28 @@ func main() {
 		switch key {
 		case 1:
 			fmt.Println("登入聊天室")
-			loop = false
+			fmt.Printf("請輸入用戶id: ")
+			fmt.Scanf("%d\n", &userId)
+			fmt.Printf("請輸入用戶密碼: ")
+			fmt.Scanf("%s\n", &userPwd)
+			fmt.Println()
+
+			up := &processes.UserProcess{}
+			up.Login(userId, userPwd)
+
 		case 2:
 			fmt.Println("註冊用戶")
-			loop = false
+			fmt.Printf("請輸入用戶id: ")
+			fmt.Scanf("%d\n", &userId)
+			fmt.Printf("請輸入用戶密碼: ")
+			fmt.Scanf("%s\n", &userPwd)
+			fmt.Printf("請輸入用戶名稱: ")
+			fmt.Scanf("%s\n", &userName)
+			fmt.Println()
+
+			up := &processes.UserProcess{}
+			up.Register(userId, userPwd, userName)
+
 		case 3:
 			fmt.Println("退出系統")
 			loop = false
@@ -37,23 +56,6 @@ func main() {
 		if loop == false {
 			break
 		}
-
-	}
-
-	if key == 1 {
-		fmt.Printf("請輸入用戶id: ")
-		fmt.Scanf("%d\n", &userId)
-		fmt.Printf("請輸入用戶密碼: ")
-		fmt.Scanf("%s\n", &userPwd)
-
-		err := login.Login(userId, userPwd)
-		if err != nil {
-			fmt.Println("登入失敗")
-		} else {
-			fmt.Println("登入成功")
-		}
-
-	} else {
 
 	}
 }
